@@ -22,6 +22,3 @@ git pull origin master
 git gc
 python manage.py syncdb 
 yes
-EXPLORER.EXE http://127.0.0.1:8000/inicializar_tablas
-python manage.py runserver 127.0.0.1:8000
-EXPLORER.EXE http://127.0.0.1:8000/inicializar_tablas
