@@ -7,6 +7,36 @@ from models import *
 from forms import *
 from django.db import connection
 from django.db import connections
+
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, AdminPasswordChangeForm
+from django.contrib.auth.models import User
+
+def ingresar(request):
+    if request.method == 'POST':
+        formulario = AuthenticationForm(request.POST)
+        if formulario.is_valid:
+            usuario = request.POST['username']
+            clave = request.POST['password']
+            acceso = authenticate(username=usuario, password=clave)
+            if acceso is not None:
+                if acceso.is_active:
+                    login(request, acceso)
+                    return HttpResponseRedirect('/')
+                else:
+                    return render_to_response('noactivo.html', context_instance=RequestContext(request))
+            else:
+                return render_to_response('login.html',{'form':formulario, 'message':'Nombre de usaurio o password no validos',}, context_instance=RequestContext(request))
+    else:
+        formulario = AuthenticationForm()
+    return render_to_response('login.html',{'form':formulario, 'message':'',}, context_instance=RequestContext(request))
+
+def logoutUser(request):
+    logout(request)
+    return HttpResponseRedirect('/')
+
+
 def c_get_next_key(BASE_DE_DATOS = "default"):
     """ return next value of sequence """
     c = connections[BASE_DE_DATOS].cursor()
@@ -15,20 +45,42 @@ def c_get_next_key(BASE_DE_DATOS = "default"):
     row = c.fetchone()
     return int(row[0])
 
+@login_required(login_url='/login/')
 def articulos_view(request, clave='', nombre ='', template_name='articulos/articulos.html'):
-    c = {'articulos': Articulos.objects.all(),}
+    c = {'articulos': Articulos.objects.all().order_by('nombre'),}
     return render_to_response(template_name, c , context_instance=RequestContext(request))
 
+@login_required(login_url='/login/')
 def alta_articulo(request, id =None, template_name='articulo.html'):
     precio_empresaextra1_id = 210
     precio_empresaextra2_id = 210
     
     if id:
         articulo = get_object_or_404(Articulos, pk=id)
-        precio_articulo = precios_articulos.objects.filter(articulo=articulo)[0]
-        impuesto_articulo = ImpuestosArticulo.objects.filter(articulo=articulo)[0]
-        nivel_articulo = NivelesArticulos.objects.filter(articulo=articulo)[0]
-        clave_articulo = ClavesArticulos.objects.filter(articulo=articulo)[0]
+        
+        precio_articulo = precios_articulos.objects.filter(articulo=articulo)
+        if precio_articulo.count() > 0:
+            precio_articulo = precio_articulo[0]
+        else:
+            precio_articulo = precios_articulos()
+                
+        impuesto_articulo = ImpuestosArticulo.objects.filter(articulo=articulo)
+        if impuesto_articulo.count() > 0:
+            impuesto_articulo = impuesto_articulo[0]
+        else:
+            impuesto_articulo = ImpuestosArticulo()
+
+        nivel_articulo = NivelesArticulos.objects.filter(articulo=articulo)
+        if nivel_articulo.count() > 0:
+            nivel_articulo = nivel_articulo[0]
+        else:
+            nivel_articulo = NivelesArticulos()
+
+        clave_articulo = ClavesArticulos.objects.filter(articulo=articulo)
+        if clave_articulo.count() > 0:
+            clave_articulo = clave_articulo[0]
+        else:
+            clave_articulo = ClavesArticulos()
     else:
         articulo =  Articulos()
         precio_articulo = precios_articulos()

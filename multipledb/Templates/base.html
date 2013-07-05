@@ -35,16 +35,24 @@
 		<div class="navbar navbar-static">
 			<ul class="nav" role="navigation">
 				<li class="dropdown">
-					
 					<li class="dropdown">
 						<a id="drop1" href="/articulos/"role="button" > <i class="icon-barcode"></i> Articulos</a>
 					</li>
-					</li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</div>
+       </li>
+     </ul>
+     <ul class="nav pull-right">
+          <div id=" span breadcrumbs" >
+            <div class ='span'>
+              {% if not user.is_anonymous %}
+              {{ user.username }} <a href="/logout/" class='btn btn-mini btn-danger' style=" margin-top: 1px; ">Salir</a>
+              {% else %}
+              <a class="btn btn-mini btn-success" href="/login/" style=" margin-top: 1px; ">Iniciar Sesión</a>
+              {% endif %}
+            </div>
+          </div>
+        </ul>
+   </div>
+ </div>
 
       {% block content %}{% endblock %}
   
