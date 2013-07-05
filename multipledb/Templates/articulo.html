@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>
+	{% csrf_token %}
+	<fieldset>
+		 {{ clave_articulo_formulario.errors }}
+        <legend>Clave:</legend>
+		<div class="span" >
+		    <label>Clave</label>
+		    <div class="input-prepend input-append">
+		      {{ clave_articulo_formulario.clave }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>Rol</label>
+		    <div class="input-prepend input-append">
+		      {{ clave_articulo_formulario.rol }}
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		{{formulario_articulo.errors }}
+        <legend>Datos generales:</legend>
+		<div class="span" >
+		    <label>nombre</label>
+		    <div class="input-prepend input-append">
+		      {{formulario_articulo.nombre }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>Linea</label>
+		    <div class="input-prepend input-append">
+		      {{formulario_articulo.linea }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>Unidad de venta</label>
+		    <div class="input-prepend input-append">
+		      {{formulario_articulo.unidvta }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>Unidad de compra</label>
+		    <div class="input-prepend input-append">
+		      {{formulario_articulo.unidcopra }}
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		{{ precio_articulo_formulario.errors }}
+		{{ impuesto_articulo_formulario.errors }}
+        <legend>Precio:</legend>
+		<div class="span" >
+		    <label>precio_empresa</label>
+		    <div class="input-prepend input-append">
+		      {{ precio_articulo_formulario.precio_empresa }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>precio</label>
+		    <div class="input-prepend input-append">
+		      {{ precio_articulo_formulario.precio }}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>moneda</label>
+		    <div class="input-prepend input-append">
+		      {{ precio_articulo_formulario.moneda }}
+			</div>
+		</div>
+
+		<div class="span" >
+		    <label>impuesto</label>
+		    <div class="input-prepend input-append">
+		      {{ impuesto_articulo_formulario.impuesto }}
+			</div>
+		</div>
+	</fieldset>
+	<fieldset>
+		{{ nivel_articulo_formulario.errors }}
+        <legend>Puntos de reorden:</legend>
+		<div class="span" >
+		    <label>localizacion</label>
+		    <div class="input-prepend input-append">
+		      {{nivel_articulo_formulario.localizacion}}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>inventario_minimo</label>
+		    <div class="input-prepend input-append">
+		      {{nivel_articulo_formulario.inventario_minimo}}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>inventario_maximo</label>
+		    <div class="input-prepend input-append">
+		      {{nivel_articulo_formulario.inventario_maximo}}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>punto_reorden</label>
+		    <div class="input-prepend input-append">
+		      {{nivel_articulo_formulario.punto_reorden}}
+			</div>
+		</div>
+		<div class="span" >
+		    <label>almacen</label>
+		    <div class="input-prepend input-append">
+		      {{nivel_articulo_formulario.almacen}}
+			</div>
+		</div>
+	</fieldset>
+	<div class="form-actions mainmenu">
+		<input class='btn' type="submit" value='Guardar'/> 
+	</div>
+	
+</form>
+{% endblock %}

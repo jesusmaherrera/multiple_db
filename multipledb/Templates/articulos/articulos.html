@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="form-actions mainmenu">
+    <a class='btn' href="/articulo/">Nuevo Articulo</a>
+  </div>
+<table class="table tableCell table-hover">
+    <tr>
+      <th>Nombre</th>
+    </tr>
+    {% for articulo in articulos %}
+    <tr>
+      <td><a href="/articulo/{{ articulo.id }}/">{{ articulo.nombre }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
