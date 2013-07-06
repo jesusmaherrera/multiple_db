@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+{% if msg %}
+<div class="alert alert-block fade in">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>{{ msg }}</strong> 
+</div>
+{% endif %}
 <div class="form-actions mainmenu">
   <form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>
   {% csrf_token %}  
@@ -8,7 +14,7 @@
       <div class='span' style='font-size:12px;'>
         {{ filtro_form.articulo }}
       </div>
-       <!-- {{ filtro_form.clave }} --> {{ filtro_form.nombre }}
+       {{ filtro_form.clave }}{{ filtro_form.nombre }}
       <button class="btn" type="submit"><i class='icon-search'></i> Buscar</button>
       <a class='btn' href="/articulo/"><i class='icon-plus'></i> Nuevo Articulo</a>
     </div>

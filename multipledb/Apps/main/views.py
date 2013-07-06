@@ -49,13 +49,23 @@ def c_get_next_key(BASE_DE_DATOS = "default"):
 
 @login_required(login_url='/login/')
 def articulos_view(request, clave='', nombre ='', template_name='articulos/articulos.html'):
+    msg =''
     if request.method =='POST':
         filtro_form = filtroarticulos_form(request.POST)
         if filtro_form.is_valid():
             articulo = filtro_form.cleaned_data['articulo']
             nombre = filtro_form.cleaned_data['nombre']
+            clave = filtro_form.cleaned_data['clave']
+
             if articulo != None:
                 return HttpResponseRedirect('/articulo/%s/'% articulo.id)
+            elif clave != '':
+                clave_articulo = ClavesArticulos.objects.filter(clave=clave)
+                if clave_articulo.count() > 0:
+                    return HttpResponseRedirect('/articulo/%s/'% clave_articulo[0].articulo.id)
+                else:
+                    articulos_list = Articulos.objects.filter(nombre__icontains=nombre).order_by('nombre')
+                    msg='No se encontro ningun articulo con esta clave'
             else:
                 articulos_list = Articulos.objects.filter(nombre__icontains=nombre).order_by('nombre')
     else:
@@ -76,10 +86,10 @@ def articulos_view(request, clave='', nombre ='', template_name='articulos/artic
         # If page is out of range (e.g. 9999), deliver last page of results.
         articulos = paginator.page(paginator.num_pages)
 
-
     c = {
         'articulos': articulos,
         'filtro_form':filtro_form,
+        'msg':msg,
     }
     return render_to_response(template_name, c , context_instance=RequestContext(request))
 
