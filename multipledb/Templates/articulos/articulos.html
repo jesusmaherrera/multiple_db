@@ -1,17 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="form-actions mainmenu">
-    <a class='btn' href="/articulo/">Nuevo Articulo</a>
-  </div>
+  <form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>
+  {% csrf_token %}  
+    <div class="input-append">
+      {{ filtro_form.errors }}
+      <div class='span' style='font-size:12px;'>
+        {{ filtro_form.articulo }}
+      </div>
+       <!-- {{ filtro_form.clave }} --> {{ filtro_form.nombre }}
+      <button class="btn" type="submit"><i class='icon-search'></i> Buscar</button>
+      <a class='btn' href="/articulo/"><i class='icon-plus'></i> Nuevo Articulo</a>
+    </div>
+  </form>   
+</div>
 <table class="table tableCell table-hover">
     <tr>
       <th>Nombre</th>
+      <th>Linea</th>
     </tr>
     {% for articulo in articulos %}
     <tr>
       <td><a href="/articulo/{{ articulo.id }}/">{{ articulo.nombre }}</a></td>
+      <td>{{ articulo.linea }} </td>
     </tr>
     {% endfor %}
+    <div class="pagination pagination-mini mainmenu">
+      <ul>
+        {% if articulos.has_previous %}
+        <li><a href="?page={{ articulos.previous_page_number }}">Anterior</a></li>
+        {% else %}
+        <li class="disabled"><a href="#">Anterior</a></li>
+        {% endif %}
+        <li class="disabled"><a href="#">Pagina {{ articulos.number }} de {{ articulos.paginator.num_pages }}.</a></li>
+        {% if articulos.has_next %}
+        <li><a href="?page={{ articulos.next_page_number }}">Siguiente</a></li>
+        {% else %}
+        <li class="disabled"><a href="#">Siguiente</a></li>
+        {% endif %} 
+      </ul>
+    </div>
 </table>
-
+{% include 'autocomplete_light/static.html' %}
 {% endblock %}

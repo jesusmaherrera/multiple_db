@@ -12,6 +12,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, AdminPasswordChangeForm
 from django.contrib.auth.models import User
+from multipledb.settings import PRECIOS_EMPRESA_EXTRA
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def ingresar(request):
     if request.method == 'POST':
@@ -47,13 +49,44 @@ def c_get_next_key(BASE_DE_DATOS = "default"):
 
 @login_required(login_url='/login/')
 def articulos_view(request, clave='', nombre ='', template_name='articulos/articulos.html'):
-    c = {'articulos': Articulos.objects.all().order_by('nombre'),}
+    if request.method =='POST':
+        filtro_form = filtroarticulos_form(request.POST)
+        if filtro_form.is_valid():
+            articulo = filtro_form.cleaned_data['articulo']
+            nombre = filtro_form.cleaned_data['nombre']
+            if articulo != None:
+                return HttpResponseRedirect('/articulo/%s/'% articulo.id)
+            else:
+                articulos_list = Articulos.objects.filter(nombre__icontains=nombre).order_by('nombre')
+    else:
+        filtro_form = filtroarticulos_form()
+        articulos_list = Articulos.objects.all().order_by('nombre')
+
+
+    paginator = Paginator(articulos_list, 20) # Muestra 10 ventas por pagina
+    page = request.GET.get('page')
+
+    #####PARA PAGINACION##############
+    try:
+        articulos = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        articulos = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        articulos = paginator.page(paginator.num_pages)
+
+
+    c = {
+        'articulos': articulos,
+        'filtro_form':filtro_form,
+    }
     return render_to_response(template_name, c , context_instance=RequestContext(request))
 
 @login_required(login_url='/login/')
 def alta_articulo(request, id =None, template_name='articulo.html'):
-    precio_empresaextra1_id = 210
-    precio_empresaextra2_id = 210
+    precio_empresaextra1_id = PRECIOS_EMPRESA_EXTRA['default']
+    precio_empresaextra2_id = PRECIOS_EMPRESA_EXTRA['OTRA']
     
     if id:
         articulo = get_object_or_404(Articulos, pk=id)
@@ -102,12 +135,11 @@ def alta_articulo(request, id =None, template_name='articulo.html'):
             if articulo2.id == None:
                 articulo2.id = c_get_next_key()
             
-
             precios1 = precio_articulo_formulario.save(commit = False)
             if precios1.id == None:
                 precios1.id = -1
                 precios1.articulo = articulo2
-            precios1.save()
+            
             precios2 = precio_articulo_formulario.save(commit = False)
             if precios2.id == None:
                 precios2.id = -1
@@ -115,26 +147,22 @@ def alta_articulo(request, id =None, template_name='articulo.html'):
                 precios2.precio_empresa = precios_empresa.objects.get(pk=precio_empresaextra1_id)
                 precios2.precio = 0
                 precios2.moneda = precios1.moneda
-                precios2.save()
 
             impuesto3 = impuesto_articulo_formulario.save(commit = False)
             if impuesto3.id == None:
                 impuesto3.id = -1
                 impuesto3.articulo = articulo2
-            impuesto3.save()
-
+            
             claves4 = clave_articulo_formulario.save(commit = False)
             if claves4.id == None:
                 claves4.id = -1
                 claves4.articulo = articulo2
-            claves4.save()
-
+            
             niveles4 = nivel_articulo_formulario.save(commit = False)
             if niveles4.id == None:
                 niveles4.id = -1
                 niveles4.articulo = articulo2
-            niveles4.save()
-
+           
             #Articulo
             linea = LineaArticulos.objects.using('OTRA').get(nombre = articulo2.linea.nombre)
             try:
@@ -153,6 +181,13 @@ def alta_articulo(request, id =None, template_name='articulo.html'):
                     unidcopra = articulo2.unidcopra,)
             
             articulo2.save()
+            precios1.save()
+            if precios2.id == None:
+                precios2.save()
+            impuesto3.save()
+            claves4.save()
+            niveles4.save()
+
             #Precios
             moneda = Moneda.objects.using('OTRA').get(nombre = precio_articulo_formulario.cleaned_data['moneda'].nombre)
             precio = precios_empresa.objects.using('OTRA').get(nombre = precio_articulo_formulario.cleaned_data['precio_empresa'].nombre)
@@ -168,7 +203,6 @@ def alta_articulo(request, id =None, template_name='articulo.html'):
             else:
                 precios_articulos.objects.using('OTRA').create(id = c_get_next_key('OTRA'), articulo = articulo8, moneda = moneda, precio_empresa = precio, precio = precio_articulo_formulario.cleaned_data['precio'])
                 precios_articulos.objects.using('OTRA').create(id = c_get_next_key('OTRA'), articulo = articulo8, moneda = moneda, precio_empresa = precios_empresa.objects.using('OTRA').get(pk=precio_empresaextra2_id) , precio = 0)
-            
             
             #Impuestos
             impuesto = Impuesto.objects.using('OTRA').get(nombre = impuesto3.impuesto.nombre)

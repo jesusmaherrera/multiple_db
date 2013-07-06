@@ -12,6 +12,11 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+PRECIOS_EMPRESA_EXTRA = {
+    'default':210,
+    'OTRA':210,
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -133,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'autocomplete_light',
     'multipledb.Apps.main',  #ENLAZANDO APLICACION CON PROYECTO(RUTA)
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
