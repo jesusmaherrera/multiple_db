@@ -14,8 +14,8 @@ MANAGERS = ADMINS
 
 PRECIOS_EMPRESA_EXTRA = {
     'default':210,
-    'OTRA':210,
-    'los100':210,
+    'AD20072':210,
+    'AD20073':210,
 }
 
 DATABASES = {
@@ -30,7 +30,7 @@ DATABASES = {
 
     },
 
-    'OTRA': {
+    'AD20072': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'C:\Microsip datos\AD2007 2.FDB',                      # Or path to database file if using sqlite3.
         'USER': 'SYSDBA',                      # Not used with sqlite3.
@@ -40,7 +40,7 @@ DATABASES = {
         'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
     },
 
-    'los100': {
+    'AD20073': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'C:\Microsip datos\AD2007 3.FDB',                      # Or path to database file if using sqlite3.
         'USER': 'SYSDBA',                      # Not used with sqlite3.

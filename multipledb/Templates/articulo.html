@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
+{% if msg %}
+<div class="alert alert-block fade in">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    <strong>{{ msg }}</strong> 
+</div>
+{% endif %}
 <form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>
 	{% csrf_token %}
 	<fieldset>
