@@ -4,115 +4,118 @@
 <form method="post" class="form-horizontal" action="" width="300px"  enctype='multipart/form-data'>
 	{% csrf_token %}
 	<fieldset>
-		 {{ clave_articulo_formulario.errors }}
+		 {{ clave_articulo_form.errors }}
         <legend>Clave:</legend>
 		<div class="span" >
 		    <label>Clave</label>
 		    <div class="input-prepend input-append">
-		      {{ clave_articulo_formulario.clave }}
+		      {{ clave_articulo_form.clave }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>Rol</label>
 		    <div class="input-prepend input-append">
-		      {{ clave_articulo_formulario.rol }}
+		      {{ clave_articulo_form.rol }}
 			</div>
 		</div>
 	</fieldset>
 	<fieldset>
-		{{formulario_articulo.errors }}
+		{{articulo_form.errors }}
         <legend>Datos generales:</legend>
 		<div class="span" >
 		    <label>nombre</label>
 		    <div class="input-prepend input-append">
-		      {{formulario_articulo.nombre }}
+		      {{articulo_form.nombre }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>Linea</label>
 		    <div class="input-prepend input-append">
-		      {{formulario_articulo.linea }}
+		      {{articulo_form.linea }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>Unidad de venta</label>
 		    <div class="input-prepend input-append">
-		      {{formulario_articulo.unidvta }}
+		      {{articulo_form.unidvta }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>Unidad de compra</label>
 		    <div class="input-prepend input-append">
-		      {{formulario_articulo.unidcopra }}
+		      {{articulo_form.unidcopra }}
 			</div>
 		</div>
 	</fieldset>
 	<fieldset>
-		{{ precio_articulo_formulario.errors }}
-		{{ impuesto_articulo_formulario.errors }}
+		{{ precio_articulo_form.errors }}
+		{{ impuesto_articulo_form.errors }}
         <legend>Precio:</legend>
 		<div class="span" >
 		    <label>precio_empresa</label>
 		    <div class="input-prepend input-append">
-		      {{ precio_articulo_formulario.precio_empresa }}
+		      {{ precio_articulo_form.precio_empresa }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>precio</label>
 		    <div class="input-prepend input-append">
-		      {{ precio_articulo_formulario.precio }}
+		      {{ precio_articulo_form.precio }}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>moneda</label>
 		    <div class="input-prepend input-append">
-		      {{ precio_articulo_formulario.moneda }}
+		      {{ precio_articulo_form.moneda }}
 			</div>
 		</div>
 
 		<div class="span" >
 		    <label>impuesto</label>
 		    <div class="input-prepend input-append">
-		      {{ impuesto_articulo_formulario.impuesto }}
+		      {{ impuesto_articulo_form.impuesto }}
 			</div>
 		</div>
 	</fieldset>
 	<fieldset>
-		{{ nivel_articulo_formulario.errors }}
+		{{ nivel_articulo_form.errors }}
         <legend>Puntos de reorden:</legend>
 		<div class="span" >
 		    <label>localizacion</label>
 		    <div class="input-prepend input-append">
-		      {{nivel_articulo_formulario.localizacion}}
+		      {{nivel_articulo_form.localizacion}}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>inventario_minimo</label>
 		    <div class="input-prepend input-append">
-		      {{nivel_articulo_formulario.inventario_minimo}}
+		      {{nivel_articulo_form.inventario_minimo}}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>inventario_maximo</label>
 		    <div class="input-prepend input-append">
-		      {{nivel_articulo_formulario.inventario_maximo}}
+		      {{nivel_articulo_form.inventario_maximo}}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>punto_reorden</label>
 		    <div class="input-prepend input-append">
-		      {{nivel_articulo_formulario.punto_reorden}}
+		      {{nivel_articulo_form.punto_reorden}}
 			</div>
 		</div>
 		<div class="span" >
 		    <label>almacen</label>
 		    <div class="input-prepend input-append">
-		      {{nivel_articulo_formulario.almacen}}
+		      {{nivel_articulo_form.almacen}}
 			</div>
 		</div>
 	</fieldset>
+	<div id="modal_cargando" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    	
+  </div>
 	<div class="form-actions mainmenu">
-		<input class='btn' type="submit" value='Guardar'/> 
+		<input class='btn' type="submit" value='Guardar' onclick='$("#modal_cargando").modal()'/> 
 	</div>
 	
 </form>

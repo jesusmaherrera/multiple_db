@@ -15,6 +15,7 @@ MANAGERS = ADMINS
 PRECIOS_EMPRESA_EXTRA = {
     'default':210,
     'OTRA':210,
+    'los100':210,
 }
 
 DATABASES = {
@@ -37,7 +38,16 @@ DATABASES = {
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
         'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+    },
 
+    'los100': {
+        'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'C:\Microsip datos\AD2007 3.FDB',                      # Or path to database file if using sqlite3.
+        'USER': 'SYSDBA',                      # Not used with sqlite3.
+        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3050', 
+        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
     }
 }
 
