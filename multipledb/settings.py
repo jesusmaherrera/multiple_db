@@ -16,6 +16,7 @@ PRECIOS_EMPRESA_EXTRA = {
     'default':210,
     'AD20072':210,
     'AD20073':210,
+    'REFACCIONARIA':286,
 }
 
 DATABASES = {
@@ -48,7 +49,19 @@ DATABASES = {
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
         'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+    },
+
+
+    'REFACCIONARIA': {
+        'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'C:\Microsip datos\REFACCIONARIA.FDB',                      # Or path to database file if using sqlite3.
+        'USER': 'SYSDBA',                      # Not used with sqlite3.
+        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
+        'HOST': '189.231.80.177',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3050', 
+        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
     }
+    
 }
 
 # Local time zone for this installation. Choices can be found here:
