@@ -28,7 +28,7 @@ class LineaArticulos(models.Model):
 
 class Articulos(models.Model):
     id                  = models.AutoField(primary_key=True, db_column='ARTICULO_ID')
-    nombre              = models.CharField(max_length=100, db_column='NOMBRE')
+    nombre              = models.CharField(max_length=100, db_column='NOMBRE', unique=True)
     linea               = models.ForeignKey(LineaArticulos, db_column='LINEA_ARTICULO_ID')
     unidvta             = models.CharField('Unidad de Venta',default = 'PIEZA' ,max_length=20,blank=True, null=True, db_column='UNIDAD_VENTA')
     unidcopra           = models.CharField('Unidad de Compra',default = 'PIEZA' ,max_length=20, blank=True, null=True, db_column='UNIDAD_COMPRA')
@@ -123,7 +123,7 @@ class RolesClavesArticulos(models.Model):
 
 class ClavesArticulos(models.Model):
     id = models.AutoField(primary_key=True, db_column='CLAVE_ARTICULO_ID')
-    clave = models.CharField(max_length=20, db_column='CLAVE_ARTICULO')
+    clave = models.CharField(max_length=20, db_column='CLAVE_ARTICULO', unique=True)
     articulo = models.ForeignKey(Articulos, db_column='ARTICULO_ID')
     rol = models.ForeignKey(RolesClavesArticulos, db_column='ROL_CLAVE_ART_ID')
 

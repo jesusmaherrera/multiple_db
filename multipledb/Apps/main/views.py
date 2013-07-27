@@ -145,150 +145,139 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
         if articulo_form.is_valid() and precio_articulo_form.is_valid() and impuesto_articulo_form.is_valid() and nivel_articulo_form.is_valid() and clave_articulo_form.is_valid():
 
             articulo = articulo_form.save(commit = False)
-            clave_enotro_articulo = ClavesArticulos.objects.exclude(articulo__nombre=articulo.nombre).filter(clave=clave_articulo_form.cleaned_data['clave'])
-            if clave_enotro_articulo.count() > 0:
-                msg ='Clave ya asignada al articulo [%s], por favor escribe otra clave para poder guardar el articulo' % clave_enotro_articulo[0].articulo
-            else:
-                if articulo.id == None:
-                    articulo.id = c_get_next_key()
-                articulo.save()    
+            
+            if articulo.id == None:
+                articulo.id = c_get_next_key()
+            articulo.save()    
 
-                precio_articulo_1 = precio_articulo_form.save(commit = False)
-                if precio_articulo_1.id == None:
-                    precio_articulo_1.id = -1
-                    precio_articulo_1.articulo = articulo
-                
-                precio_articulo_1.save()
-                
-                #Para agregar un segundo precio_articulo en ceros solo al crear uno nuevo          
-                precio_articulo_2 = precio_articulo_form.save(commit = False)
-                if precio_articulo_2.id == -1:
-                    precio_articulo_2.articulo = articulo
-                    precio_articulo_2.precio_empresa = precios_empresa.objects.get(pk=PRECIOS_EMPRESA_EXTRA['default'])
-                    precio_articulo_2.precio = 0
-                    precio_articulo_2.moneda = precio_articulo_1.moneda
-                    precio_articulo_2.save()    
+            precio_articulo_1 = precio_articulo_form.save(commit = False)
+            if precio_articulo_1.id == None:
+                precio_articulo_1.id = -1
+                precio_articulo_1.articulo = articulo
+            
+            precio_articulo_1.save()
+            
+            #Para agregar un segundo precio_articulo en ceros solo al crear uno nuevo          
+            precio_articulo_2 = precio_articulo_form.save(commit = False)
+            if precio_articulo_2.id == -1:
+                precio_articulo_2.articulo = articulo
+                precio_articulo_2.precio_empresa = precios_empresa.objects.get(pk=PRECIOS_EMPRESA_EXTRA['default'])
+                precio_articulo_2.precio = 0
+                precio_articulo_2.moneda = precio_articulo_1.moneda
+                precio_articulo_2.save()    
 
-                impuesto_articulo = impuesto_articulo_form.save(commit = False)
-                if impuesto_articulo.id == None:
-                    impuesto_articulo.id = -1
-                    impuesto_articulo.articulo = articulo
-                
-                clave_articulo = clave_articulo_form.save(commit = False)
-                if clave_articulo.id == None:
-                    clave_articulo.id = -1
-                    clave_articulo.articulo = articulo
-                
-                nivel_articulo = nivel_articulo_form.save(commit = False)
-                if nivel_articulo.id == None:
-                    nivel_articulo.id = -1
-                    nivel_articulo.articulo = articulo
-               
-                #Sincronizar articulos de base de datos default con las otras bases de datos
-                app_databases = DATABASES.keys()
-                #para quitar la base de datos default de las bases de datos a sincronizar
-                for i in range(0,len(app_databases)-1):
-                    if app_databases[i] == 'default':
-                        del app_databases[i]
+            impuesto_articulo = impuesto_articulo_form.save(commit = False)
+            if impuesto_articulo.id == None:
+                impuesto_articulo.id = -1
+                impuesto_articulo.articulo = articulo
+            
+            clave_articulo = clave_articulo_form.save(commit = False)
+            if clave_articulo.id == None:
+                clave_articulo.id = -1
+                clave_articulo.articulo = articulo
+            
+            nivel_articulo = nivel_articulo_form.save(commit = False)
+            if nivel_articulo.id == None:
+                nivel_articulo.id = -1
+                nivel_articulo.articulo = articulo
+           
+            #Sincronizar articulos de base de datos default con las otras bases de datos
+            app_databases = DATABASES.keys()
+            #para quitar la base de datos default de las bases de datos a sincronizar
+            for i in range(0,len(app_databases)-1):
+                if app_databases[i] == 'default':
+                    del app_databases[i]
 
-                #########################################################
-                #Guarda datos del articulo en la base de datos 'default'#
-                #########################################################
-                
-                impuesto_articulo.save()
-                nivel_articulo.save()
-                clave_articulo.save()
-                for database_x in app_databases:
-                    linea_articulo_x = LineaArticulos.objects.using(database_x).get(nombre = articulo.linea.nombre)
-                    #Si ya existe un articulo en esta base de datos lo modifica
+            #########################################################
+            #Guarda datos del articulo en la base de datos 'default'#
+            #########################################################
+            
+            impuesto_articulo.save()
+            nivel_articulo.save()
+            clave_articulo.save()
+            for database_x in app_databases:
+                linea_articulo_x = LineaArticulos.objects.using(database_x).get(nombre = articulo.linea.nombre)
+                #Si ya existe un articulo en esta base de datos lo modifica
+                try:
+                    articulo_x = ClavesArticulos.objects.using(database_x).filter(clave=clave_articulo.clave)[0].articulo
+                #Si el articulo no existe se crea uno nuevo
+                except IndexError:
                     try:
-                        articulo_x = ClavesArticulos.objects.using(database_x).filter(clave=clave_articulo.clave)[0].articulo
-                    #Si el articulo no existe se crea uno nuevo
-                    except IndexError:
-                        try:
-                            articulo_x = Articulos.objects.using(database_x).get(nombre=articulo.nombre)
-                        except ObjectDoesNotExist:
-                            articulo_x = Articulos.objects.using(database_x).create(
-                                id = c_get_next_key(database_x), 
-                                nombre = articulo.nombre,
-                                linea =  linea_articulo_x,
-                                unidvta = articulo.unidvta,
-                                unidcopra = articulo.unidcopra,)    
-                        else:
-                            articulo_x.nombre = articulo.nombre
-                            articulo_x.linea =  linea_articulo_x
-                            articulo_x.unidvta = articulo.unidvta
-                            articulo_x.unidcopra = articulo.unidcopra
-                            articulo_x.save(using=database_x)    
-                    #Si el articulo si existe modifico sus datos con los nuevos datos
+                        articulo_x = Articulos.objects.using(database_x).get(nombre=articulo.nombre)
+                    except ObjectDoesNotExist:
+                        articulo_x = Articulos.objects.using(database_x).create(
+                            id = c_get_next_key(database_x), 
+                            nombre = articulo.nombre,
+                            linea =  linea_articulo_x,
+                            unidvta = articulo.unidvta,
+                            unidcopra = articulo.unidcopra,)    
                     else:
                         articulo_x.nombre = articulo.nombre
                         articulo_x.linea =  linea_articulo_x
                         articulo_x.unidvta = articulo.unidvta
                         articulo_x.unidcopra = articulo.unidcopra
-                        articulo_x.save(using=database_x)
+                        articulo_x.save(using=database_x)    
+                #Si el articulo si existe modifico sus datos con los nuevos datos
+                else:
+                    articulo_x.nombre = articulo.nombre
+                    articulo_x.linea =  linea_articulo_x
+                    articulo_x.unidvta = articulo.unidvta
+                    articulo_x.unidcopra = articulo.unidcopra
+                    articulo_x.save(using=database_x)
 
-                    #########################################################
-                    #  Guarda datos del articulo en la otra base de datos   #
-                    #########################################################
+                #########################################################
+                #  Guarda datos del articulo en la otra base de datos   #
+                #########################################################
 
-                    #Precios
-                    moneda_x = Moneda.objects.using(database_x).get(nombre = precio_articulo_form.cleaned_data['moneda'].nombre)
-                    
-                    precio_empresa_x = precios_empresa.objects.using(database_x).get(nombre = precio_articulo_form.cleaned_data['precio_empresa'].nombre)
+                #Precios
+                moneda_x = Moneda.objects.using(database_x).get(nombre = precio_articulo_form.cleaned_data['moneda'].nombre)
                 
-                    precios_articulo_x = precios_articulos.objects.using(database_x).filter(articulo = articulo_x)
-                    #Si precios_articulo_x tiene al menos un precio
-                    if precios_articulo_x.count() > 0:
-                        precio_articulo_x = precios_articulo_x[0]
-                        precio_articulo_x.moneda = moneda_x
-                        precio_articulo_x.precio_empresa = precio_empresa_x
-                        precio_articulo_x.precio = precio_articulo_form.cleaned_data['precio']
-                        precio_articulo_x.save(using=database_x)
-                    else:
-                        precios_articulos.objects.using(database_x).create(id = c_get_next_key(database_x), articulo = articulo_x, moneda = moneda_x, precio_empresa = precio_empresa_x, precio = precio_articulo_form.cleaned_data['precio'])
-                        precios_articulos.objects.using(database_x).create(id = c_get_next_key(database_x), articulo = articulo_x, moneda = moneda_x, precio_empresa = precios_empresa.objects.using(database_x).get(pk=PRECIOS_EMPRESA_EXTRA[database_x]) , precio = 0)
-                
-                    #Impuestos
-                    impuesto_x = Impuesto.objects.using(database_x).get(nombre = impuesto_articulo.impuesto.nombre)
-                    impuestos_articulo_x = ImpuestosArticulo.objects.using(database_x).filter(articulo = articulo_x)
+                precio_empresa_x = precios_empresa.objects.using(database_x).get(nombre = precio_articulo_form.cleaned_data['precio_empresa'].nombre)
+            
+                precios_articulo_x = precios_articulos.objects.using(database_x).filter(articulo = articulo_x)
+                #Si precios_articulo_x tiene al menos un precio
+                if precios_articulo_x.count() > 0:
+                    precio_articulo_x = precios_articulo_x[0]
+                    precio_articulo_x.moneda = moneda_x
+                    precio_articulo_x.precio_empresa = precio_empresa_x
+                    precio_articulo_x.precio = precio_articulo_form.cleaned_data['precio']
+                    precio_articulo_x.save(using=database_x)
+                else:
+                    precios_articulos.objects.using(database_x).create(id = c_get_next_key(database_x), articulo = articulo_x, moneda = moneda_x, precio_empresa = precio_empresa_x, precio = precio_articulo_form.cleaned_data['precio'])
+                    precios_articulos.objects.using(database_x).create(id = c_get_next_key(database_x), articulo = articulo_x, moneda = moneda_x, precio_empresa = precios_empresa.objects.using(database_x).get(pk=PRECIOS_EMPRESA_EXTRA[database_x]) , precio = 0)
+            
+                #Impuestos
+                impuesto_x = Impuesto.objects.using(database_x).get(nombre = impuesto_articulo.impuesto.nombre)
+                impuestos_articulo_x = ImpuestosArticulo.objects.using(database_x).filter(articulo = articulo_x)
 
-                    if impuestos_articulo_x.count() > 0:
-                        impuesto_articulo_x = impuestos_articulo_x[0]
-                        impuesto_articulo_x.impuesto = impuesto_x
-                        impuesto_articulo_x.save(using=database_x)
-                    else:
-                        ImpuestosArticulo.objects.using(database_x).create(id = -1, articulo = articulo_x, impuesto = impuesto_x)
-                
-                    #clave
-                    rol_x = RolesClavesArticulos.objects.using(database_x).get(nombre = clave_articulo.rol.nombre)
-                    claves_articulo_x = ClavesArticulos.objects.using(database_x).filter(articulo = articulo_x)
+                if impuestos_articulo_x.count() > 0:
+                    impuesto_articulo_x = impuestos_articulo_x[0]
+                    impuesto_articulo_x.impuesto = impuesto_x
+                    impuesto_articulo_x.save(using=database_x)
+                else:
+                    ImpuestosArticulo.objects.using(database_x).create(id = -1, articulo = articulo_x, impuesto = impuesto_x)
+            
+                #clave
+                rol_x = RolesClavesArticulos.objects.using(database_x).get(nombre = clave_articulo.rol.nombre)
+                claves_articulo_x = ClavesArticulos.objects.using(database_x).filter(articulo = articulo_x)
 
-                    if claves_articulo_x.count() > 0:
-                        clave_articulo_x = claves_articulo_x[0]
-                        clave_articulo_x.rol = rol_x
-                        clave_articulo_x.clave = clave_articulo.clave
-                        clave_articulo_x.save(using=database_x)
-                    else:
-                        ClavesArticulos.objects.using(database_x).create(id = -1, articulo = articulo_x, rol = rol_x, clave = clave_articulo.clave)
+                if claves_articulo_x.count() > 0:
+                    clave_articulo_x = claves_articulo_x[0]
+                    clave_articulo_x.rol = rol_x
+                    clave_articulo_x.clave = clave_articulo.clave
+                    clave_articulo_x.save(using=database_x)
+                else:
+                    ClavesArticulos.objects.using(database_x).create(id = -1, articulo = articulo_x, rol = rol_x, clave = clave_articulo.clave)
+            
+                #Puntos de reorden
+                almacen_x = Almacenes.objects.using(database_x).get(nombre = nivel_articulo.almacen.nombre)
+                niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo = articulo_x)
+                if niveles_articulo_x.count() <= 0:
+                    NivelesArticulos.objects.using(database_x).create(id = -1, articulo = articulo_x, almacen =almacen_x, 
+                        localizacion = nivel_articulo.localizacion, inventario_maximo = nivel_articulo.inventario_maximo, inventario_minimo = nivel_articulo.inventario_minimo,
+                        punto_reorden = nivel_articulo.punto_reorden )
                 
-                    #Puntos de reorden
-                    almacen_x = Almacenes.objects.using(database_x).get(nombre = nivel_articulo.almacen.nombre)
-                    niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo = articulo_x)
-                    if niveles_articulo_x.count() > 0:
-                        nivel_articulo_x=  niveles_articulo_x[0]
-                        nivel_articulo_x.almacen =almacen_x
-                        #nivel_articulo_x.localizacion = nivel_articulo.localizacion
-                        nivel_articulo_x.inventario_maximo = nivel_articulo.inventario_maximo
-                        nivel_articulo_x.inventario_minimo = nivel_articulo.inventario_minimo
-                        nivel_articulo_x.punto_reorden = nivel_articulo.punto_reorden
-                        nivel_articulo_x.save(using=database_x)
-                    else:
-                        NivelesArticulos.objects.using(database_x).create(id = -1, articulo = articulo_x, almacen =almacen_x, 
-                            localizacion = nivel_articulo.localizacion, inventario_maximo = nivel_articulo.inventario_maximo, inventario_minimo = nivel_articulo.inventario_minimo,
-                            punto_reorden = nivel_articulo.punto_reorden )
-                    
-                return HttpResponseRedirect('/articulos/')
+            return HttpResponseRedirect('/articulos/')
     #Si estamos cargando la vista por primera ves
     else:
         articulo_form = articulos_form(instance=  articulo)
