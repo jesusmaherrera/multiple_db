@@ -1,7 +1,7 @@
 # Django settings for multipledb project.
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+import json
 
 import os
 RUTA_PROYECTO =os.path.dirname(os.path.realpath(__file__)).strip('settings')
@@ -22,15 +22,14 @@ PRECIOS_EMPRESA_EXTRA = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'C:\Microsip datos\AD2007.FDB',                      # Or path to database file if using sqlite3.
+        'NAME': 'C:\\Microsip datos\\AD2007.FDB',                      # Or path to database file if using sqlite3.
         'USER': 'SYSDBA',                      # Not used with sqlite3.
         'PASSWORD': 'masterkey',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
         'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
 
-    },
-
+    },     
     'AD20072': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'C:\Microsip datos\AD2007 2.FDB',                      # Or path to database file if using sqlite3.
@@ -39,30 +38,25 @@ DATABASES = {
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
         'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
-    },
-
-    'AD20073': {
-        'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'C:\Microsip datos\AD2007 3.FDB',                      # Or path to database file if using sqlite3.
-        'USER': 'SYSDBA',                      # Not used with sqlite3.
-        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3050', 
-        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
-    },
-
-
-    'REFACCIONARIA': {
-        'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'C:\Microsip datos\REFACCIONARIA.FDB',                      # Or path to database file if using sqlite3.
-        'USER': 'SYSDBA',                      # Not used with sqlite3.
-        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
-        'HOST': 'bccomercial.no-ip.org',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '3050', 
-        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
     }
-    
+     # 'REFACCIONARIA': {
+#     #     'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#     #     'NAME': 'C:\Microsip datos\REFACCIONARIA.FDB',                      # Or path to database file if using sqlite3.
+#     #     'USER': 'SYSDBA',                      # Not used with sqlite3.
+#     #     'PASSWORD': 'masterkey',                  # Not used with sqlite3.
+#     #     'HOST': 'bccomercial.no-ip.org',                      # Set to empty string for localhost. Not used with sqlite3.
+#     #     'PORT': '3050', 
+#     #     'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+#     # }
 }
+
+# extra_databases = json.loads(open(RUTA_PROYECTO+ '\\data_bases.json').read())
+
+# with open(RUTA_PROYECTO+ '\\data_bases.json', 'w') as outfile:
+#   json.dump(extra_databases, outfile)
+
+# for extra_data_base in extra_databases.keys():
+#      DATABASES[extra_data_base] = extra_databases[extra_data_base]
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
