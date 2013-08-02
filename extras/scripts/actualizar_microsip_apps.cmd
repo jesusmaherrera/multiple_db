@@ -18,6 +18,7 @@ git checkout -- multipledb\Templates\
 git checkout -- requirements\
 git checkout -- multipledb\Actualizar.lnk
 git checkout -- multipledb\Iniciar.lnk
+git checkout -- multipledb\extras\scripts\actualizar_microsip_apps.cmd
 git pull origin master
 git gc
 python manage.py syncdb 
