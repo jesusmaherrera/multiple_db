@@ -287,12 +287,12 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
                         ClavesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, rol=rol_x, clave=clave_articulo.clave)
                 
                     #Puntos de reorden
-                    almacen_x = Almacenes.objects.using(database_x).get(nombre=nivel_articulo.almacen.nombre)
-                    niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo=articulo_x)
-                    if niveles_articulo_x.count() <= 0:
-                        NivelesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, almacen=almacen_x, 
-                            localizacion=nivel_articulo.localizacion, inventario_maximo=nivel_articulo.inventario_maximo, inventario_minimo=nivel_articulo.inventario_minimo,
-                            punto_reorden=nivel_articulo.punto_reorden)
+                    # almacen_x = Almacenes.objects.using(database_x).get(nombre=nivel_articulo.almacen.nombre)
+                    # niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo=articulo_x)
+                    # if niveles_articulo_x.count() <= 0:
+                    #     NivelesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, almacen=almacen_x, 
+                    #         localizacion=nivel_articulo.localizacion, inventario_maximo=nivel_articulo.inventario_maximo, inventario_minimo=nivel_articulo.inventario_minimo,
+                    #         punto_reorden=nivel_articulo.punto_reorden)
                     
                 return HttpResponseRedirect('/articulos/')
     #Si estamos cargando la vista por primera ves
