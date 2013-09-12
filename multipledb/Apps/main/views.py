@@ -12,7 +12,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, AdminPasswordChangeForm
 from django.contrib.auth.models import User
-from multipledb.settings import PRECIOS_EMPRESA_EXTRA, DATABASES
+from multipledb.settings import DATABASES
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def ingresar(request):
@@ -173,12 +173,12 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
                     precio_articulo_1.articulo = articulo
                 
                 precio_articulo_1.save()
-                
+                DB_EXTRA_OPTIONS = DATABASES['default']['SIC_EXTRA_OPTIONS']
                 #Para agregar un segundo precio_articulo en ceros solo al crear uno nuevo          
                 precio_articulo_2 = precio_articulo_form.save(commit=False)
                 if precio_articulo_2.id == -1:
                     precio_articulo_2.articulo = articulo
-                    precio_articulo_2.precio_empresa = precios_empresa.objects.get(pk=PRECIOS_EMPRESA_EXTRA['default'])
+                    precio_articulo_2.precio_empresa = precios_empresa.objects.get(pk=DB_EXTRA_OPTIONS['precio_empresa'])
                     precio_articulo_2.precio = 0
                     precio_articulo_2.moneda = precio_articulo_1.moneda
                     precio_articulo_2.save()    
@@ -213,6 +213,7 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
                 nivel_articulo.save()
                 clave_articulo.save()
                 for database_x in app_databases:
+                    DB_EXTRA_OPTIONS = DATABASES[database_x]['SIC_EXTRA_OPTIONS']
                     linea_articulo_x = LineaArticulos.objects.using(database_x).get(nombre=articulo.linea.nombre)
                     #Si ya existe un articulo en esta base de datos lo modifica
                     try:
@@ -261,7 +262,7 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
                         precio_articulo_x.save(using=database_x)
                     else:
                         precios_articulos.objects.using(database_x).create(id=c_get_next_key(database_x), articulo=articulo_x, moneda=moneda_x, precio_empresa=precio_empresa_x, precio=precio_articulo_form.cleaned_data['precio'])
-                        precios_articulos.objects.using(database_x).create(id=c_get_next_key(database_x), articulo=articulo_x, moneda=moneda_x, precio_empresa=precios_empresa.objects.using(database_x).get(pk=PRECIOS_EMPRESA_EXTRA[database_x]) , precio=0)
+                        precios_articulos.objects.using(database_x).create(id=c_get_next_key(database_x), articulo=articulo_x, moneda=moneda_x, precio_empresa=precios_empresa.objects.using(database_x).get(pk=DB_EXTRA_OPTIONS['precio_empresa']) , precio=0)
                 
                     #Impuestos
                     impuesto_x = Impuesto.objects.using(database_x).get(nombre = impuesto_articulo.impuesto.nombre)
@@ -285,14 +286,26 @@ def ArticuloManageView(request, id =None, template_name='articulo.html'):
                         clave_articulo_x.save(using=database_x)
                     else:
                         ClavesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, rol=rol_x, clave=clave_articulo.clave)
-                
-                    #Puntos de reorden
-                    # almacen_x = Almacenes.objects.using(database_x).get(nombre=nivel_articulo.almacen.nombre)
-                    # niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo=articulo_x)
-                    # if niveles_articulo_x.count() <= 0:
-                    #     NivelesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, almacen=almacen_x, 
-                    #         localizacion=nivel_articulo.localizacion, inventario_maximo=nivel_articulo.inventario_maximo, inventario_minimo=nivel_articulo.inventario_minimo,
-                    #         punto_reorden=nivel_articulo.punto_reorden)
+                    
+                    take_defaultdata  = DB_EXTRA_OPTIONS.get('take_defaultdata', False)
+                    
+                    if take_defaultdata:
+                        #Puntos de reorden
+                        almacen_x = Almacenes.objects.using(database_x).get(nombre=nivel_articulo.almacen.nombre)
+                        niveles_articulo_x = NivelesArticulos.objects.using(database_x).filter(articulo=articulo_x)
+
+                        if niveles_articulo_x.count() <= 0:
+                            NivelesArticulos.objects.using(database_x).create(id=-1, articulo=articulo_x, almacen=almacen_x, 
+                                localizacion=nivel_articulo.localizacion, inventario_maximo=nivel_articulo.inventario_maximo, inventario_minimo=nivel_articulo.inventario_minimo,
+                                punto_reorden=nivel_articulo.punto_reorden)
+                        else:
+                            nivel_articulo_x = NivelesArticulos.objects.using(database_x).get(pk=niveles_articulo_x[0].id)
+                            nivel_articulo_x.almacen = almacen_x
+                            nivel_articulo_x.localizacion = nivel_articulo.localizacion 
+                            nivel_articulo_x.inventario_maximo = nivel_articulo.inventario_maximo 
+                            nivel_articulo_x.inventario_minimo = nivel_articulo.inventario_minimo
+                            nivel_articulo_x.punto_reorden = nivel_articulo.punto_reorden
+                            nivel_articulo_x.save()
                     
                 return HttpResponseRedirect('/articulos/')
     #Si estamos cargando la vista por primera ves

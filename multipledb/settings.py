@@ -12,32 +12,27 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-PRECIOS_EMPRESA_EXTRA = {
-    'default':210,
-    'AD20072':210,
-    'AD20073':210,
-    'REFACCIONARIA':286,
-}
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'C:\\Microsip datos\\AD2007.FDB',                      # Or path to database file if using sqlite3.
         'USER': 'SYSDBA',                      # Not used with sqlite3.
-        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
+        'PASSWORD': '2',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
-        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+        'OPTIONS' : {'charset' : 'ISO8859_1'},       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+        'SIC_EXTRA_OPTIONS':{'precio_empresa':210,},
 
     },     
     'AD20072': {
         'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'C:\Microsip datos\AD2007 2.FDB',                      # Or path to database file if using sqlite3.
         'USER': 'SYSDBA',                      # Not used with sqlite3.
-        'PASSWORD': 'masterkey',                  # Not used with sqlite3.
+        'PASSWORD': '2',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '3050', 
-        'OPTIONS' : {'charset' : 'ISO8859_1'}       #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+        'OPTIONS' : {'charset' : 'ISO8859_1'},      #PARA QUE ACEPTE CARACTERES RAROS              # Set to empty string for default. Not used with sqlite3.
+        'SIC_EXTRA_OPTIONS':{'precio_empresa':210, }, #'take_defaultdata':True,
     }
      # 'REFACCIONARIA': {
 #     #     'ENGINE': 'django.db.backends.firebird', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
